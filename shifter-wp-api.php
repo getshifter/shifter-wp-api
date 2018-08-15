@@ -3,7 +3,7 @@
 Plugin Name: Shifter WP API
 Plugin URI: https://github.com/getshifter/shifter-wp-api
 Description: Shifter WordPress API
-Version: 1.0.0
+Version: 0.1.0
 Author: DigitalCube
 Author URI: https://getshifter.io
 License: GPL2
