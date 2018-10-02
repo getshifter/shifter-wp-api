@@ -3,7 +3,7 @@
 Plugin Name: Shifter WP API
 Plugin URI: https://github.com/getshifter/shifter-wp-api
 Description: Shifter WordPress API
-Version: 0.1.0
+Version: 0.1.1
 Author: DigitalCube
 Author URI: https://getshifter.io
 License: GPL2
@@ -23,17 +23,17 @@ if ( !class_exists( 'Shifter_API' ) ) {
         $this->site_id = getenv("SITE_ID");
         $this->access_token = getenv("SHIFTER_ACCESS_TOKEN");
         $this->refresh_token = getenv("SHIFTER_REFRESH_TOKEN");
-    
+
         $shifte_api_v1 = getenv("SHIFTER_API_URL_V1");
         $shifte_api_v2 = getenv("SHIFTER_API_URL_V2");
         $this->terminate_url = "$shifte_api_v2/projects/$this->site_id/wordpress_site/stop";
         $this->generate_url = "$shifte_api_v1/projects/$this->site_id/artifacts";
         $this->refresh_url = "$shifte_api_v1/login";
         $this->shifter_dashboard_url = "https://go.getshifter.io/admin/projects/v2/$this->site_id";
-    
+
         $bootup_unixtimestamp = file_get_contents(ABSPATH."/.bootup");
         $bootup_date = new DateTime();
-        self::$token_update_date = $bootup_date->setTimestamp($bootup_unixtimestamp);
+        self::$token_update_date = $bootup_date->setTimestamp(intval($bootup_unixtimestamp));
       }
 
       public function terminate_wp_app() {
@@ -42,14 +42,14 @@ if ( !class_exists( 'Shifter_API' ) ) {
         }
         wp_remote_request($this->terminate_url, $this->build_args());
       }
-    
+
       public function generate_wp_app() {
         if ($this->access_token_is_expired()) {
           $this->refresh_token();
         }
         return wp_remote_request($this->generate_url, $this->build_args());
       }
-    
+
       private function build_args() {
         $headers = array(
           "authorization" => $this->access_token,
@@ -57,7 +57,7 @@ if ( !class_exists( 'Shifter_API' ) ) {
         );
         return array("method" => "POST", "headers" => $headers, "blocking" => false);
       }
-    
+
       private function refresh_token() {
         $headers = array("content-type" => "application/json");
         $args = array(
@@ -71,7 +71,7 @@ if ( !class_exists( 'Shifter_API' ) ) {
         $this->access_token = $body_array->AccessToken;
         putenv("SHIFTER_ACCESS_TOKEN=$this->access_token");
       }
-    
+
       private function access_token_is_expired() {
         $now = new DateTime;
         $elapsed = self::$token_update_date->diff($now, true);
